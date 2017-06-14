@@ -1,0 +1,9 @@
+These are some auxiliary tools I use. They are mostly for graphing the
+outputs of the sensors.
+
+rrdcreate.sh: create the initial .rrd files
+graph.sh: plots .rrd files
+merged-*.png: sample files
+
+There is another tool to fetch from MQTT and feed the .rrd, but I'm
+still finishing it.
