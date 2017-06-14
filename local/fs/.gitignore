@@ -1,4 +1,3 @@
-# Ignore everything
-*
 # But not this file itself.
 !.gitignore
+credentials.lua
