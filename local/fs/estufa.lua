@@ -59,7 +59,7 @@ function set_greenery(s)
 		greenery_state = 0
 		gpio.write(gpio_greenery, gpio.LOW)
 	end
-	safe_publish("greenhouse/greenery/pump",greenery_state,0,0, nil)
+	safe_publish("greenhouse/greenery/pump",greenery_state,1,1, nil)
 end
 
 function toggle_greenery()
@@ -76,7 +76,7 @@ function set_nursery(s)
 		nursery_state = 0
 		gpio.write(gpio_nursery, gpio.LOW)
 	end
-	safe_publish("greenhouse/nursery/pump",nursery_state,1,0, nil)
+	safe_publish("greenhouse/nursery/pump",nursery_state,1,1, nil)
 end
 
 set_greenery(0)
@@ -106,8 +106,8 @@ m:connect("192.168.254.2", 1883, 0, 1,
 	  function(c)
 		mqtt_connected=true
 		c:publish("greenhouse/greenery/status",1,0,1, nil)
-		c:publish("greenhouse/greenery/pump",greenery_state,1,0, nil)
-		c:publish("greenhouse/nursery/pump",nursery_state,1,0, nil)
+		c:publish("greenhouse/greenery/pump",greenery_state,1,1, nil)
+		c:publish("greenhouse/nursery/pump",nursery_state,1,1, nil)
 	  	log("MQTT connected")
 	  end,
           function(client, reason)
