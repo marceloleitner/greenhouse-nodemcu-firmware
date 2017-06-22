@@ -123,6 +123,7 @@ m:connect("192.168.254.2", 1883, 0, 1,
 		c:publish("greenhouse/greenery/pump",greenery_state,1,1, nil)
 		c:publish("greenhouse/nursery/pump",nursery_state,1,1, nil)
 		c:publish("greenhouse/perennials/pump",perennials_state,1,1, nil)
+		c:subscribe("greenhouse/set/#", 0, function(m) print("subscribe done") end)
 	  	log("MQTT connected")
 	  end,
           function(client, reason)
@@ -131,13 +132,22 @@ m:connect("192.168.254.2", 1883, 0, 1,
 
 -- on publish message receive event
 --[[
-m:on("message", function(client, topic, data)
+]]
+mdis = {}
+mdis['greenhouse/set/greenery/pump'] = set_greenery
+mdis['greenhouse/set/nursery/pump'] = set_nursery
+mdis['greenhouse/set/perennials/pump'] = set_perennials
+
+function dispatch(client, topic, data)
   print(topic .. ":" )
   if data ~= nil then
     print(data)
   end
-end)
-]]
+	if data ~= nil and mdis[topic] then
+		mdis[topic](tonumber(data))
+	end
+end
+m:on("message", dispatch)
 
 -- Init cron timers
 
