@@ -79,8 +79,22 @@ function set_nursery(s)
 	safe_publish("greenhouse/nursery/pump",nursery_state,1,1, nil)
 end
 
+function set_perennials(s)
+	if s == 1 then
+		log("Perennials on")
+		perennials_state = 1
+		gpio.write(gpio_perennials, gpio.HIGH)
+	else
+		log("Perennials off")
+		perennials_state = 0
+		gpio.write(gpio_perennials, gpio.LOW)
+	end
+	safe_publish("greenhouse/perennials/pump",perennials_state,1,1, nil)
+end
+
 set_greenery(0)
 set_nursery(0)
+set_perennials(0)
 
 -- Use the nodemcu specific pool servers and keep the time synced
 -- forever (this has the autorepeat flag set).
@@ -108,6 +122,7 @@ m:connect("192.168.254.2", 1883, 0, 1,
 		c:publish("greenhouse/greenery/status",1,0,1, nil)
 		c:publish("greenhouse/greenery/pump",greenery_state,1,1, nil)
 		c:publish("greenhouse/nursery/pump",nursery_state,1,1, nil)
+		c:publish("greenhouse/perennials/pump",perennials_state,1,1, nil)
 	  	log("MQTT connected")
 	  end,
           function(client, reason)
@@ -135,6 +150,19 @@ cron.schedule("0 */1 * * *", function(e)
 	tmr.create():alarm(5*60*1000, tmr.ALARM_SINGLE, function(cb_timer)
 		set_nursery(0)
 	end)
+end)
+
+cron.schedule("0 */1 * * *", function(e)
+	tm = rtctime.epoch2cal(rtctime.get())
+	if tm["hour"] == 22 or tm["hour"] == 1 or tm["hour"] == 4 or
+	   tm["hour"] == 8 or tm["hour"] == 10 or tm["hour"] == 12 or
+	   tm["hour"] == 14 or tm["hour"] == 16 or tm["hour"] == 18 or
+	   tm["hour"] == 20 then
+		set_perennials(1)
+		tmr.create():alarm(5*60*1000, tmr.ALARM_SINGLE, function(cb_timer)
+			set_perennials(0)
+		end)
+	end
 end)
 
 cron.schedule("*/5 * * * *", function(e)
