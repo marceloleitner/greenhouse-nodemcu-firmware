@@ -8,7 +8,7 @@ function startup()
     else
       print("Running")
       file.close("init.lua")
-      dofile("estufa.lua")
+      dofile("greenhouse.lua")
     end
 end
 
